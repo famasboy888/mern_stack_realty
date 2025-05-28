@@ -1,4 +1,4 @@
-name: Test
+name: Testing Pipeline
 
 on:
   push:
@@ -13,8 +13,26 @@ on:
       - main
 
 jobs:
-  dummy:
+  test:
+    name: Running Unit and Integration Tests
     runs-on: ubuntu-latest
+
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN}}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL}}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      NODE_ENV: test
+
     steps:
-      - name: Echo Dummy
-        run: echo "dummy"
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run test:unit
+      - run: npm run test:integration
