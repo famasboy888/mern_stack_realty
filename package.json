@@ -15,16 +15,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/famasboy888/test1.git"
+    "url": "git+https://github.com/famasboy888/mern_stack_realty.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/famasboy888/test1/issues"
+    "url": "https://github.com/famasboy888/mern_stack_realty/issues"
   },
-  "homepage": "https://github.com/famasboy888/test1#readme",
+  "homepage": "https://github.com/famasboy888/mern_stack_realty#readme",
   "dependencies": {
     "@upstash/redis": "^1.34.8",
     "bcryptjs": "^3.0.2",
