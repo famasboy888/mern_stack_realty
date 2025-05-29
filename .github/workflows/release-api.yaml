@@ -79,5 +79,6 @@ jobs:
       - name: Build and push Docker image
         if: steps.changed-files.outputs.api_any_changed == 'true'
         run: |
+          ls -la
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}
