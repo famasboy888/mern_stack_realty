@@ -8,6 +8,7 @@ on:
 
 jobs:
   release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.head_branch == 'dev' || github.event.workflow_run.head_branch == 'staging' || github.event.workflow_run.head_branch == 'main') }}
     permissions:
       contents: write
       pull-requests: write
@@ -21,11 +22,20 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+      - name: Get current and previous SHAs
+        id: sha
+        run: |
+          current_sha="${{ github.event.workflow_run.head_sha }}"
+          previous_sha=$(git rev-parse "${current_sha}^")
+          echo "current_sha=$current_sha" >> $GITHUB_OUTPUT
+          echo "previous_sha=$previous_sha" >> $GITHUB_OUTPUT
 
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46
         with:
+          base_sha: ${{ steps.sha.outputs.previous_sha }}
+          sha: ${{ steps.sha.outputs.current_sha }}
           files_yaml: |
             api:
               - api/**
@@ -46,4 +56,35 @@ jobs:
         if: steps.changed-files.outputs.api_any_changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: npx semantic-release > semantic-output.txt
+
+      - name: Extract version and build tag
+        if: steps.changed-files.outputs.api_any_changed == 'true'
+        id: version
+        run: |
+          version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
+          sha=$(git rev-parse --short HEAD)
+
+          if [[ "${{ github.ref }}" == 'refs/heads/dev' ]]; then
+            tag="${version}-dev.${sha}"
+          elif [[ "${{ github.ref }}" == 'refs/heads/staging' ]]; then
+            tag="${version}-staging.${sha}"
+          else
+            tag="${version}"
+          fi
+
+          echo "Docker tag: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to DockerHub
+        if: steps.changed-files.outputs.api_any_changed == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        if: steps.changed-files.outputs.api_any_changed == 'true'
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}
