@@ -17,7 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 5
+          fetch-depth: 0 # Change to fetch all history
+          ref: ${{ github.event.workflow_run.head_branch }} # Add this line
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,9 +30,14 @@ jobs:
         id: sha
         run: |
           current_sha="${{ github.event.workflow_run.head_sha }}"
-          previous_sha=$(git rev-parse ${current_sha}^)
+          base_sha="${{ github.event.workflow_run.head_commit.before }}"
+          if [ -z "$base_sha" ]; then
+            base_sha=$(git rev-parse ${current_sha}^)
+          fi
           echo "current_sha=$current_sha" >> $GITHUB_OUTPUT
-          echo "previous_sha=$previous_sha" >> $GITHUB_OUTPUT
+          echo "previous_sha=$base_sha" >> $GITHUB_OUTPUT
+          echo $current_sha
+          echo $base_sha
 
       - name: Get changed files
         id: changed-files
