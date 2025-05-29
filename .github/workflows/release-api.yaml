@@ -29,7 +29,7 @@ jobs:
         id: sha
         run: |
           current_sha="${{ github.event.workflow_run.head_sha }}"
-          previous_sha=$(git rev-parse "${current_sha}")
+          previous_sha=$(git log --format=%H -n 2 | tail -n 1)
           echo "current_sha=$current_sha" >> $GITHUB_OUTPUT
           echo "previous_sha=$previous_sha" >> $GITHUB_OUTPUT
 
