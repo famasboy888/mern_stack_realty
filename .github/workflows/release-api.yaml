@@ -17,8 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Change to fetch all history
-          ref: ${{ github.event.workflow_run.head_branch }} # Add this line
+          fetch-depth: 5
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-tags: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
