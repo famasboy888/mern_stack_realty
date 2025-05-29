@@ -19,7 +19,6 @@ jobs:
         with:
           fetch-depth: 5
           ref: ${{ github.event.workflow_run.head_branch }}
-          fetch-tags: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -62,22 +61,29 @@ jobs:
         if: steps.changed-files.outputs.api_any_changed == 'true'
         run: npm ci
 
-      - name: Semantic release (API)
+      - name: Semantic release (API) or Get latest release version
         if: steps.changed-files.outputs.api_any_changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release > semantic-output.txt
-
-      - name: Extract version and build tag
-        if: steps.changed-files.outputs.api_any_changed == 'true'
         id: version
         run: |
-          version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
+          if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
+            # For main branch - run semantic release
+            npx semantic-release > semantic-output.txt
+            version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
+          else
+            # For dev/staging - get latest release version
+            version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"api-v([^"]+)".*/\1/')
+            if [ -z "$version" ]; then
+              version="0.0.0"  # fallback if no release exists
+            fi
+          fi
+
           sha=$(git rev-parse --short HEAD)
 
-          if [[ "${{ github.ref }}" == 'refs/heads/dev' ]]; then
+          if [[ "${{ github.event.workflow_run.head_branch }}" == "dev" ]]; then
             tag="${version}-dev.${sha}"
-          elif [[ "${{ github.ref }}" == 'refs/heads/staging' ]]; then
+          elif [[ "${{ github.event.workflow_run.head_branch }}" == "staging" ]]; then
             tag="${version}-staging.${sha}"
           else
             tag="${version}"
