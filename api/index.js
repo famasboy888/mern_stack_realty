@@ -80,7 +80,7 @@ mongoose
     server = app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);
       console.log(`Server is running on port ${PORT}`);
-      console.log(`This is a log for testing workflow v1`);
+      console.log(`This is a log for testing workflow v2`);
     });
   })
   .catch((err) => {
