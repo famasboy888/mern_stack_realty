@@ -1,3 +1,11 @@
+## [1.1.9](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.8...api-v1.1.9) (2025-05-30)
+
+
+### Bug Fixes
+
+* **api:** Added NODE_ENV ([9be190a](https://github.com/famasboy888/mern_stack_realty/commit/9be190a40fb3b5907c76219d7a7341fbc832e8f7))
+* **api:** Testing trigger for workflow v1 ([a8121e3](https://github.com/famasboy888/mern_stack_realty/commit/a8121e33ffa878125cc96c2f8e8088902a1cc7a2))
+
 ## [1.1.8](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.7...api-v1.1.8) (2025-05-29)
 
 
