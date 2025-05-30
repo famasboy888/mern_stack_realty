@@ -10,7 +10,7 @@ const allowedOrigins = {
 };
 
 const selectedOrigin =
-  allowedOrigins[process.env.APP_ENV] || "http://localhost:5173";
+  allowedOrigins[process.env.NODE_ENV] || "http://localhost:5173";
 
 const corsConfig = {
   origin: selectedOrigin,
@@ -25,5 +25,7 @@ const corsConfig = {
   exposedHeaders: ["set-cookie"],
   maxAge: 86400, // 24 hours
 };
+
+console.log("conf", selectedOrigin);
 
 export const corsMiddleware = cors(corsConfig);
