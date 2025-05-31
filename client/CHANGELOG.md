@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.1.0...client-v1.1.1) (2025-05-31)
+
+
+### Bug Fixes
+
+* **client:** trigger for client workflow v2 ([73b5e19](https://github.com/famasboy888/mern_stack_realty/commit/73b5e192db4b43c27feda4b5424892ab143ac703))
+
 # [1.1.0](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.0.0...client-v1.1.0) (2025-05-31)
 
 
