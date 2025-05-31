@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all deps and build
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy everything
 COPY . .
