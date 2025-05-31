@@ -1,3 +1,10 @@
+## [1.1.10](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.9...api-v1.1.10) (2025-05-31)
+
+
+### Bug Fixes
+
+* **client:** Workflow test run v1 ([8ceca61](https://github.com/famasboy888/mern_stack_realty/commit/8ceca614f91e11fce6a074a225073c5c957dc978))
+
 ## [1.1.9](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.8...api-v1.1.9) (2025-05-30)
 
 
