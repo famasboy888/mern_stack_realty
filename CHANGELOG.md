@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.10...api-v1.2.0) (2025-05-31)
+
+
+### Features
+
+* **client:** Added docker files for building and releaserc for semantic-release ([cde7d37](https://github.com/famasboy888/mern_stack_realty/commit/cde7d37c7a6a0ede6db709ead9dac5e34b52827b))
+
 ## [1.1.10](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.9...api-v1.1.10) (2025-05-31)
 
 
