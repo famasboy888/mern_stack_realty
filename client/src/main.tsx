@@ -8,6 +8,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import App from "./App.tsx";
 import { persistor, store } from "./redux/store.ts";
 
+console.log("Env:", import.meta.env.VITE_NODE_ENV);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
