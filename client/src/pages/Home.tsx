@@ -7,6 +7,7 @@ import ListingCardComponent from "../components/ListingCardComponent";
 import { IListing } from "../types/listing/listing";
 
 export default function Home() {
+  //This is a test workflow trigger to check if the workflow is working correctly
   SwiperCore.use([Navigation, Pagination]);
   const [offerListings, setOfferListings] = useState<IListing[]>([]);
   const [saleListings, setSaleListings] = useState<IListing[]>([]);
