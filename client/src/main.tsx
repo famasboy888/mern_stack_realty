@@ -9,6 +9,7 @@ import App from "./App.tsx";
 import { persistor, store } from "./redux/store.ts";
 
 console.log("Env:", import.meta.env.VITE_NODE_ENV);
+console.log("Env 2:", process.env.VITE_NODE_ENV);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
