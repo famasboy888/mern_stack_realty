@@ -1,6 +1,6 @@
+import { NODE_ENV } from "../utils/vars";
+
 export default function About() {
-  const env_node_env =
-    import.meta.env.VITE_NODE_ENV ?? window.__ENV__.VITE_NODE_ENV;
   return (
     <main>
       <div className="py-20 px-4 max-w-6xl mx-auto">
@@ -29,7 +29,7 @@ export default function About() {
           dedicated to making that a reality for each and every one of our
           clients.
         </p>
-        <p>This app is running on: {env_node_env} mode</p>
+        <p>This app is running on: {NODE_ENV} mode</p>
       </div>
     </main>
   );

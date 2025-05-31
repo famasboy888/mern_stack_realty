@@ -24,15 +24,15 @@ FROM nginx:stable-alpine
 # Copy built frontend
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy env template and script
-COPY env.js /usr/share/nginx/html/env-config.template.js
-COPY env.sh /docker-entrypoint.d/40-env-config.sh
-RUN chmod +x /docker-entrypoint.d/40-env-config.sh
-
 # Custom nginx config (optional but recommended)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copy env template and script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 #Test tringger for workflow v2
