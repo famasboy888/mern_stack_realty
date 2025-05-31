@@ -1,3 +1,21 @@
+# [1.3.0](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.2.0...api-v1.3.0) (2025-05-31)
+
+
+### Bug Fixes
+
+* **api:** trigger for client workflow v2 ([378ccf5](https://github.com/famasboy888/mern_stack_realty/commit/378ccf5207b3b3d1f5cbc3ac3992a11fe374c809))
+* **client:** Fixing detecting current semantic-release v2 ([c93ec0c](https://github.com/famasboy888/mern_stack_realty/commit/c93ec0c11cdc49bc6aaebf6d71bdc85f7bbc63e8))
+* **client:** Fixing detecting current semantic-release version ([295bac8](https://github.com/famasboy888/mern_stack_realty/commit/295bac81bb21d151ddfe97607ef50d6170890c54))
+* **client:** test trigger workflow v5 ([7c6cff7](https://github.com/famasboy888/mern_stack_realty/commit/7c6cff70122203662eab380f4a76f3a77a862dbd))
+* **client:** test trigger workflow v6 ([301e9cf](https://github.com/famasboy888/mern_stack_realty/commit/301e9cf873742d368c43efcf501c1dcd19aedecd))
+* **client:** trigger for client workflow v2 ([73b5e19](https://github.com/famasboy888/mern_stack_realty/commit/73b5e192db4b43c27feda4b5424892ab143ac703))
+* **client:** Workflow test run v2 ([2d7fd17](https://github.com/famasboy888/mern_stack_realty/commit/2d7fd1770af0f17581db0e23333871dc8b9af62e))
+
+
+### Features
+
+* **client:** Added display for node_env for client ([fdbc96e](https://github.com/famasboy888/mern_stack_realty/commit/fdbc96ef4b1d4a4df571e95626c58228201aec09))
+
 # [1.2.0](https://github.com/famasboy888/mern_stack_realty/compare/api-v1.1.10...api-v1.2.0) (2025-05-31)
 
 
