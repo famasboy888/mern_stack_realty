@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.0.0...client-v1.1.0) (2025-05-31)
+
+
+### Bug Fixes
+
+* **client:** test trigger workflow v5 ([7c6cff7](https://github.com/famasboy888/mern_stack_realty/commit/7c6cff70122203662eab380f4a76f3a77a862dbd))
+* **client:** test trigger workflow v6 ([301e9cf](https://github.com/famasboy888/mern_stack_realty/commit/301e9cf873742d368c43efcf501c1dcd19aedecd))
+
+
+### Features
+
+* **client:** Added display for node_env for client ([fdbc96e](https://github.com/famasboy888/mern_stack_realty/commit/fdbc96ef4b1d4a4df571e95626c58228201aec09))
+
 # 1.0.0 (2025-05-31)
 
 
