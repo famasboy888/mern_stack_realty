@@ -47,7 +47,7 @@ jobs:
           sha: ${{ steps.sha.outputs.current_sha }}
           files_yaml: |
             api:
-              - !client/**
+              - '!client/**'
               - api/**
               - package.json
               - package-lock.json
