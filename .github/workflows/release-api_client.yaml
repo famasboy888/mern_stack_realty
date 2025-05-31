@@ -47,6 +47,7 @@ jobs:
           sha: ${{ steps.sha.outputs.current_sha }}
           files_yaml: |
             api:
+              - !client/**
               - api/**
               - package.json
               - package-lock.json
@@ -56,12 +57,15 @@ jobs:
               - .babelrc
               - jest.config.js
               - jest.setup.js
+            client:
+              - client/**
 
-      - name: Check if any files were changed
+      # Check if any API files were changed
+      - name: (API) Check if any files were changed
         if: steps.changed-files.outputs.api_any_changed == 'true'
         run: npm ci
 
-      - name: Semantic release (API) or Get latest release version
+      - name: (API) Semantic release (API) or Get latest release version
         if: steps.changed-files.outputs.api_any_changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -92,27 +96,27 @@ jobs:
           echo "Docker tag: $tag"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
-      - name: Log in to DockerHub
+      - name: (API) Log in to DockerHub
         if: steps.changed-files.outputs.api_any_changed == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: (API) Build and push Docker image
         if: steps.changed-files.outputs.api_any_changed == 'true'
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}
 
-      - name: Create Deployment Summary
+      - name: (API) Create Deployment Summary
         if: steps.changed-files.outputs.api_any_changed == 'true'
         run: |
           # Create header
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 (API) Deployment Summary" >> $GITHUB_STEP_SUMMARY
 
           # Version information
-          echo "### Version Details" >> $GITHUB_STEP_SUMMARY
+          echo "### (API) Version Details" >> $GITHUB_STEP_SUMMARY
           echo "| Category | Value |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
           echo "| Branch | \`${{ github.event.workflow_run.head_branch }}\` |" >> $GITHUB_STEP_SUMMARY
@@ -120,7 +124,76 @@ jobs:
           echo "| Version Tag | \`${{ steps.version.outputs.tag }}\` |" >> $GITHUB_STEP_SUMMARY
 
           # Docker information
-          echo "### 🐳 Docker Image" >> $GITHUB_STEP_SUMMARY
+          echo "### 🐳 (API) Docker Image" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      # Check if any Client files were changed
+      - name: (Client) Check if any files were changed
+        if: steps.changed-files.outputs.client_any_changed == 'true'
+        run: npm ci
+
+      - name: (Client) Semantic release (Client) or Get latest release version
+        if: steps.changed-files.outputs.client_any_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: version-client
+        run: |
+          if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
+            # For main branch - run semantic release
+            npx semantic-release > semantic-output.txt
+            version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
+          else
+            # For dev/staging - get latest release version
+            version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"api-v([^"]+)".*/\1/')
+            if [ -z "$version" ]; then
+              version="0.0.0"  # fallback if no release exists
+            fi
+          fi
+
+          sha=$(git rev-parse --short HEAD)
+
+          if [[ "${{ github.event.workflow_run.head_branch }}" == "dev" ]]; then
+            tag="${version}-dev.${sha}"
+          elif [[ "${{ github.event.workflow_run.head_branch }}" == "staging" ]]; then
+            tag="${version}-staging.${sha}"
+          else
+            tag="${version}"
+          fi
+
+          echo "Docker tag: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: (Client) Log in to DockerHub
+        if: steps.changed-files.outputs.client_any_changed == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: (Client) Build and push Docker image
+        if: steps.changed-files.outputs.client_any_changed == 'true'
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}
+
+      - name: (Client) Create Deployment Summary
+        if: steps.changed-files.outputs.client_any_changed == 'true'
+        run: |
+          # Create header
+          echo "## 🚀 (Client) Deployment Summary" >> $GITHUB_STEP_SUMMARY
+
+          # Version information
+          echo "### (Client) Version Details" >> $GITHUB_STEP_SUMMARY
+          echo "| Category | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ github.event.workflow_run.head_branch }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit SHA | \`$(git rev-parse --short HEAD)\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version Tag | \`${{ steps.version-client.outputs.tag }}\` |" >> $GITHUB_STEP_SUMMARY
+
+          # Docker information
+          echo "### 🐳 (Client) Docker Image" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
