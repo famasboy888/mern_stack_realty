@@ -1,4 +1,4 @@
-window.__ENV__ = {
+window.__ENVS__ = {
   VITE_GOOGLE_CLIENT_ID: "${VITE_GOOGLE_CLIENT_ID}",
   VITE_NODE_ENV: "${VITE_NODE_ENV}",
 };
