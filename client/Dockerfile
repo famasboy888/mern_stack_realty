@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all deps and build
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy everything
 COPY . .
@@ -29,3 +29,5 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
+
+#Test tringger for workflow
