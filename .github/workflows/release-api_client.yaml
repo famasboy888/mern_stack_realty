@@ -132,10 +132,12 @@ jobs:
       # Check if any Client files were changed
       - name: (Client) Check if any files were changed
         if: steps.changed-files.outputs.client_any_changed == 'true'
+        working-directory: ./client
         run: npm ci
 
       - name: (Client) Semantic release (Client) or Get latest release version
         if: steps.changed-files.outputs.client_any_changed == 'true'
+        working-directory: ./client
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: version-client
@@ -146,7 +148,7 @@ jobs:
             version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
           else
             # For dev/staging - get latest release version
-            version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"api-v([^"]+)".*/\1/')
+            version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"client-v([^"]+)".*/\1/')
             if [ -z "$version" ]; then
               version="0.0.0"  # fallback if no release exists
             fi
@@ -174,12 +176,14 @@ jobs:
 
       - name: (Client) Build and push Docker image
         if: steps.changed-files.outputs.client_any_changed == 'true'
+        working-directory: ./client
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}
 
       - name: (Client) Create Deployment Summary
         if: steps.changed-files.outputs.client_any_changed == 'true'
+        working-directory: ./client
         run: |
           # Create header
           echo "## 🚀 (Client) Deployment Summary" >> $GITHUB_STEP_SUMMARY
