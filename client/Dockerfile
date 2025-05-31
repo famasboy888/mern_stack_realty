@@ -13,6 +13,9 @@ RUN npm ci
 # Copy everything
 COPY . .
 
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
+ENV VITE_NODE_ENV=$VITE_NODE_ENV
+
 # Build dist
 RUN npm run build
 
