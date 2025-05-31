@@ -77,9 +77,14 @@ jobs:
             version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
           else
             # For dev/staging - get latest API release version
-            version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | grep -o 'api-v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/api-v//')
-            if [ -z "$version" ]; then
-              version="0.0.0"  # fallback if no release exists
+            if ! version=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases/latest"); then
+              echo "Failed to fetch latest release, using fallback version"
+              version="0.0.0"
+            else
+              version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | grep -o 'api-v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/api-v//')
+              if [ -z "$version" ]; then
+                version="0.0.0"  # fallback if no release exists
+              fi
             fi
           fi
 
@@ -148,9 +153,14 @@ jobs:
             version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
           else
             # For dev/staging - get latest Client release version
-            version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | grep -o 'client-v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/client-v//')
-            if [ -z "$version" ]; then
-              version="0.0.0"  # fallback if no release exists
+            if ! version=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases/latest"); then
+              echo "Failed to fetch latest release, using fallback version"
+              version="0.0.0"
+            else
+              version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | grep -o 'client-v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/client-v//')
+              if [ -z "$version" ]; then
+                version="0.0.0"  # fallback if no release exists
+              fi
             fi
           fi
 
