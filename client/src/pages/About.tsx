@@ -1,5 +1,4 @@
-import { NODE_ENV } from "../utils/vars";
-
+import { NODE_ENV } from "../config";
 export default function About() {
   return (
     <main>
