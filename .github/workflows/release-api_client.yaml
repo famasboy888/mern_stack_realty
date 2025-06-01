@@ -71,10 +71,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: version
         run: |
+          # Function to check if commit is releasable
+          check_commit_type() {
+            commit_message=$(git log -1 --pretty=%B)
+            if [[ "$commit_message" =~ ^(feat|fix|perf|BREAKING CHANGE):|^BREAKING[[:space:]]CHANGE: ]]; then
+              return 0
+            else
+              return 1
+            fi
+          }
+
           if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
-            # For main branch - run semantic release
+            # Check if commit type warrants a release
+            if ! check_commit_type; then
+              echo "Commit type does not warrant a release"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Dry run to check if there would be a release
+            if ! npx semantic-release --dry-run > semantic-dry-run.txt 2>&1; then
+              echo "No release needed based on semantic-release dry run"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Proceed with actual release
             npx semantic-release > semantic-output.txt
             version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
+            
+            if [ -z "$version" ]; then
+              echo "No version was published"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
           else
             # For dev/staging - get latest API release version
             if ! version=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases/latest"); then
@@ -100,22 +130,23 @@ jobs:
 
           echo "Docker tag: $tag"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: (API) Log in to DockerHub
-        if: steps.changed-files.outputs.api_any_changed == 'true'
+        if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: (API) Build and push Docker image
-        if: steps.changed-files.outputs.api_any_changed == 'true'
+        if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}
 
       - name: (API) Create Deployment Summary
-        if: steps.changed-files.outputs.api_any_changed == 'true'
+        if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
         run: |
           # Create header
           echo "## 🚀 (API) Deployment Summary" >> $GITHUB_STEP_SUMMARY
@@ -147,10 +178,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: version-client
         run: |
+          # Function to check if commit is releasable
+          check_commit_type() {
+            commit_message=$(git log -1 --pretty=%B)
+            if [[ "$commit_message" =~ ^(feat|fix|perf|BREAKING CHANGE):|^BREAKING[[:space:]]CHANGE: ]]; then
+              return 0
+            else
+              return 1
+            fi
+          }
+
           if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
-            # For main branch - run semantic release
+            # Check if commit type warrants a release
+            if ! check_commit_type; then
+              echo "Commit type does not warrant a release"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Dry run to check if there would be a release
+            if ! npx semantic-release --dry-run > semantic-dry-run.txt 2>&1; then
+              echo "No release needed based on semantic-release dry run"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Proceed with actual release
             npx semantic-release > semantic-output.txt
             version=$(grep -oP 'Published release \K\S+' semantic-output.txt | head -n1)
+            
+            if [ -z "$version" ]; then
+              echo "No version was published"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
           else
             # For dev/staging - get latest Client release version
             if ! version=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases/latest"); then
@@ -176,23 +237,24 @@ jobs:
 
           echo "Docker tag: $tag"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: (Client) Log in to DockerHub
-        if: steps.changed-files.outputs.client_any_changed == 'true'
+        if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: (Client) Build and push Docker image
-        if: steps.changed-files.outputs.client_any_changed == 'true'
+        if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
         working-directory: ./client
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}
 
       - name: (Client) Create Deployment Summary
-        if: steps.changed-files.outputs.client_any_changed == 'true'
+        if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
         working-directory: ./client
         run: |
           # Create header
