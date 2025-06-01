@@ -75,7 +75,7 @@ jobs:
           check_commit_type() {
             commit_message=$(git log -1 --pretty=%B)
             echo "Checking commit message: $commit_message"
-            if [[ "$commit_message" =~ ^(feat|fix|perf|BREAKING CHANGE)(\([^)]+\))?:|^BREAKING[[:space:]]CHANGE: ]]; then
+            if echo "$commit_message" | grep -qE '^(feat|fix|perf|BREAKING CHANGE)(\([^)]*\))?:|^BREAKING[[:space:]]CHANGE:'; then
               echo "Commit type warrants a release"
               return 0
             else
@@ -186,7 +186,7 @@ jobs:
           check_commit_type() {
             commit_message=$(git log -1 --pretty=%B)
             echo "Checking commit message: $commit_message"
-            if [[ "$commit_message" =~ ^(feat|fix|perf|BREAKING CHANGE)(\([^)]+\))?:|^BREAKING[[:space:]]CHANGE: ]]; then
+            if echo "$commit_message" | grep -qE '^(feat|fix|perf|BREAKING CHANGE)(\([^)]*\))?:|^BREAKING[[:space:]]CHANGE:'; then
               echo "Commit type warrants a release"
               return 0
             else
