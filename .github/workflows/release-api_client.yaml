@@ -71,27 +71,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: version
         run: |
-          # Function to check if commit is releasable
-          check_commit_type() {
-            commit_message=$(git log -1 --pretty=%B)
-            echo "Checking commit message: $commit_message"
-            if echo "$commit_message" | grep -qE '^(feat|fix|perf|BREAKING CHANGE)(\([^)]*\))?:|^BREAKING[[:space:]]CHANGE:'; then
-              echo "Commit type warrants a release"
-              return 0
-            else
-              echo "Commit type does not warrant a release"
-              return 1
-            fi
-          }
-
           if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
-            # Check if commit type warrants a release
-            if ! check_commit_type; then
-              echo "Commit type does not warrant a release"
-              echo "skip=true" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-
             # Dry run to check if there would be a release
             if ! npx semantic-release --dry-run > semantic-dry-run.txt 2>&1; then
               echo "No release needed based on semantic-release dry run"
@@ -182,27 +162,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: version-client
         run: |
-          # Function to check if commit is releasable
-          check_commit_type() {
-            commit_message=$(git log -1 --pretty=%B)
-            echo "Checking commit message: $commit_message"
-            if echo "$commit_message" | grep -qE '^(feat|fix|perf|BREAKING CHANGE)(\([^)]*\))?:|^BREAKING[[:space:]]CHANGE:'; then
-              echo "Commit type warrants a release"
-              return 0
-            else
-              echo "Commit type does not warrant a release"
-              return 1
-            fi
-          }
-
           if [[ "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
-            # Check if commit type warrants a release
-            if ! check_commit_type; then
-              echo "Commit type does not warrant a release"
-              echo "skip=true" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-
             # Dry run to check if there would be a release
             if ! npx semantic-release --dry-run > semantic-dry-run.txt 2>&1; then
               echo "No release needed based on semantic-release dry run"
