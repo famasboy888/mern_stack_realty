@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.3.0...client-v1.4.0) (2025-06-01)
+
+
+### Features
+
+* **api:** test trigger workflow only if commit is correct (api) v10 ([cb073d7](https://github.com/famasboy888/mern_stack_realty/commit/cb073d74f53809abae4c176604b019570d79f321))
+* **api:** test trigger workflow only if commit is correct (api) v11 ([b89d149](https://github.com/famasboy888/mern_stack_realty/commit/b89d149528cdf0d5078c54bcaa72c9392e650b81))
+
 # [1.3.0](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.2.0...client-v1.3.0) (2025-06-01)
 
 
