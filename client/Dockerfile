@@ -35,4 +35,4 @@ EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-#Test tringger for workflow client v5
+#Test tringger for workflow client v6
