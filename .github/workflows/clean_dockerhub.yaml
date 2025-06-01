@@ -1,25 +1,59 @@
 name: Cleanup Docker Hub Tags
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      keep_tags:
+        description: "Number of tags to keep"
+        required: true
+        default: "5"
+        type: string
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Cleanup Docker Hub tags
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Get Docker Hub Token
+        id: get-token
         run: |
-          # Keep only last 5 tags for each repository
-          docker run --rm lumir/remove-dockerhub-tag \
-            --user $DOCKER_USERNAME \
-            --password $DOCKER_PASSWORD \
-            --keep 5 \
-            $DOCKER_USERNAME/mern-realty-client
+          TOKEN=$(curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD_DELETE_PERMISSION }}"}' \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+
+          if [ -z "$TOKEN" ]; then
+            echo "Failed to get Docker Hub token"
+            exit 1
+          fi
+
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Delete Old Tags
+        run: |
+          delete_tags() {
+            local repo=$1
+            local tags=$(curl -s \
+              -H "Authorization: Bearer ${{ steps.get-token.outputs.token }}" \
+              "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/$repo/tags?page_size=100")
+            
+            echo "Processing $repo repository..."
+            
+            echo "$tags" | jq -r --arg keep "${{ inputs.keep_tags }}" \
+              '.results[($keep|tonumber):] | .[].name' | while read -r tag; do
+              if [ "$tag" != "latest" ]; then
+                echo "Deleting tag: $tag"
+                curl -X DELETE \
+                  -H "Authorization: Bearer ${{ steps.get-token.outputs.token }}" \
+                  "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/$repo/tags/$tag/"
+              fi
+            done
+          }
+
+          delete_tags "mern-realty-api"
+          delete_tags "mern-realty-client"
+
+      - name: Cleanup Summary
+        run: |
+          echo "## 🧹 Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Kept newest ${{ inputs.keep_tags }} tags for each repository" >> $GITHUB_STEP_SUMMARY
+          echo "- Preserved 'latest' tags" >> $GITHUB_STEP_SUMMARY
