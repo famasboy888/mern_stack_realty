@@ -1,0 +1,65 @@
+name: Cleanup Docker Hub Tags
+
+on:
+  workflow_dispatch:
+    inputs:
+      keep_tags:
+        description: "Number of tags to keep (per repository)"
+        required: true
+        default: "5"
+        type: string
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Install Docker Hub API tools
+        run: |
+          curl -O https://raw.githubusercontent.com/docker/hub-tool/master/install.sh
+          chmod +x install.sh
+          ./install.sh
+
+      - name: Cleanup API Repository Tags
+        run: |
+          # Get all tags except latest
+          tags=$(curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
+            "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/mern-realty-api/tags?page_size=100" | \
+            jq -r '.results[].name' | grep -v "latest")
+
+          # Sort tags by creation date and keep only specified number
+          delete_tags=$(echo "$tags" | sort -r | tail -n +${{ github.event.inputs.keep_tags }})
+
+          # Delete old tags
+          for tag in $delete_tags; do
+            echo "Deleting tag: $tag"
+            docker hub-tool tag rm "${{ secrets.DOCKER_USERNAME }}/mern-realty-api:$tag" --force
+          done
+
+      - name: Cleanup Client Repository Tags
+        run: |
+          # Get all tags except latest
+          tags=$(curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_PASSWORD }}" \
+            "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/mern-realty-client/tags?page_size=100" | \
+            jq -r '.results[].name' | grep -v "latest")
+
+          # Sort tags by creation date and keep only specified number
+          delete_tags=$(echo "$tags" | sort -r | tail -n +${{ github.event.inputs.keep_tags }})
+
+          # Delete old tags
+          for tag in $delete_tags; do
+            echo "Deleting tag: $tag"
+            docker hub-tool tag rm "${{ secrets.DOCKER_USERNAME }}/mern-realty-client:$tag" --force
+          done
+
+      - name: Summary
+        run: |
+          echo "## 🧹 Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Kept newest ${{ github.event.inputs.keep_tags }} tags for each repository" >> $GITHUB_STEP_SUMMARY
+          echo "- Removed older tags" >> $GITHUB_STEP_SUMMARY
+          echo "- Preserved 'latest' tags" >> $GITHUB_STEP_SUMMARY
