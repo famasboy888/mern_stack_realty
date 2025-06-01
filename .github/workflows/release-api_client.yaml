@@ -107,13 +107,14 @@ jobs:
             fi
           else
             # For dev/staging - get latest API release version
-            if ! version=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases/latest"); then
-              echo "Failed to fetch latest release, using fallback version"
+            if ! releases=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases"); then
+              echo "Failed to fetch releases, using fallback version"
               version="0.0.0"
             else
-              version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | grep -o 'api-v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/api-v//')
+              # Find latest api-v* tag
+              version=$(echo "$releases" | grep -o '"tag_name": "api-v[0-9]\+\.[0-9]\+\.[0-9]\+"' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -n1)
               if [ -z "$version" ]; then
-                version="0.0.0"  # fallback if no release exists
+                version="0.0.0"  # fallback if no API release exists
               fi
             fi
           fi
@@ -214,13 +215,14 @@ jobs:
             fi
           else
             # For dev/staging - get latest Client release version
-            if ! version=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases/latest"); then
-              echo "Failed to fetch latest release, using fallback version"
+            if ! releases=$(curl --silent --fail "https://api.github.com/repos/${{ github.repository }}/releases"); then
+              echo "Failed to fetch releases, using fallback version"
               version="0.0.0"
             else
-              version=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep '"tag_name":' | grep -o 'client-v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/client-v//')
+              # Find latest client-v* tag
+              version=$(echo "$releases" | grep -o '"tag_name": "client-v[0-9]\+\.[0-9]\+\.[0-9]\+"' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -n1)
               if [ -z "$version" ]; then
-                version="0.0.0"  # fallback if no release exists
+                version="0.0.0"  # fallback if no Client release exists
               fi
             fi
           fi
