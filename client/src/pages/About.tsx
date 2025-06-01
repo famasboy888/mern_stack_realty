@@ -1,3 +1,4 @@
+import { NODE_ENV } from "../config";
 export default function About() {
   return (
     <main>
@@ -27,7 +28,7 @@ export default function About() {
           dedicated to making that a reality for each and every one of our
           clients.
         </p>
-        <p>This app is running on: {import.meta.env.VITE_NODE_ENV} mode</p>
+        <p>This app is running on: {NODE_ENV} mode</p>
       </div>
     </main>
   );

@@ -25,6 +25,7 @@ dist-ssr
 
 #ENV
 .env
+env.js
 
 # Test coverage
 coverage/
