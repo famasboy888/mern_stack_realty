@@ -1,3 +1,31 @@
+# [1.2.0](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.1.2...client-v1.2.0) (2025-06-01)
+
+
+### Bug Fixes
+
+* **api:** test trigger workflow only if commit is correct (client) v3 ([e6d234d](https://github.com/famasboy888/mern_stack_realty/commit/e6d234db932604802f0a4e4961cf7c4861ef6bd1))
+* **api:** test trigger workflow only if commit is correct v2 ([ecda676](https://github.com/famasboy888/mern_stack_realty/commit/ecda6760706a1cc7c11d1ca1a6df41622d1ecd02))
+* **api:** test trigger workflow only if commit is correct v3 ([b699a09](https://github.com/famasboy888/mern_stack_realty/commit/b699a09a6d82b806a5824d7ff61bffda528450c1))
+* **api:** trigger for client workflow v10 ([ab93e05](https://github.com/famasboy888/mern_stack_realty/commit/ab93e05db22cb7a0700b9871c79947a67ef219c9))
+* **api:** trigger for client workflow v11 ([fcce893](https://github.com/famasboy888/mern_stack_realty/commit/fcce8932ef2ce280f8243b5f2a7a37e31e2845e1))
+* **api:** trigger for client workflow v12 ([3c125de](https://github.com/famasboy888/mern_stack_realty/commit/3c125dea62b4daa174479d114e81b7e2c747904d))
+* **api:** trigger for client workflow v13 ([49ea9c9](https://github.com/famasboy888/mern_stack_realty/commit/49ea9c9f9de380521d608328f54a816fa5af50d4))
+* **api:** trigger for client workflow v4 ([b2af0a3](https://github.com/famasboy888/mern_stack_realty/commit/b2af0a3b3d1217de5a1b0af9e7d6db1845a0b3a3))
+* **api:** trigger for client workflow v5 ([163223a](https://github.com/famasboy888/mern_stack_realty/commit/163223ae6bbd8e0b081a8ba56dbcfbb527c45c3d))
+* **api:** trigger for client workflow v6 ([160fc00](https://github.com/famasboy888/mern_stack_realty/commit/160fc00f3ba9bda28883c779017ea6cd22955597))
+* **api:** trigger for client workflow v7 ([33ed512](https://github.com/famasboy888/mern_stack_realty/commit/33ed5124e849914331c9852b7e08db909dd39c7a))
+* **api:** trigger for client workflow v8 ([d3afe74](https://github.com/famasboy888/mern_stack_realty/commit/d3afe74df4919aaadb00dd19059dc59274886d27))
+* **api:** trigger for client workflow v9 ([102f51a](https://github.com/famasboy888/mern_stack_realty/commit/102f51aa94164ccc864e81d98c28d0ea17d03786))
+
+
+### Features
+
+* **api:** test trigger workflow only if commit is correct (api) v5 ([64d207d](https://github.com/famasboy888/mern_stack_realty/commit/64d207dc1ed4b4fef1c112486c9fd5ed6e56a632))
+* **api:** test trigger workflow only if commit is correct (api) v6 ([28c64f8](https://github.com/famasboy888/mern_stack_realty/commit/28c64f832ee57d836d55f242add9b31c6d1ade7e))
+* **api:** test trigger workflow only if commit is correct (api) v7 ([6e50df2](https://github.com/famasboy888/mern_stack_realty/commit/6e50df214c66b5943050e012a4a0c0bec2455629))
+* **api:** test trigger workflow only if commit is correct (api) v8 ([0550976](https://github.com/famasboy888/mern_stack_realty/commit/0550976d51792179afa787251939d82272c21e8e))
+* **client:** test trigger workflow only if commit is correct (client) v4 ([4a23abe](https://github.com/famasboy888/mern_stack_realty/commit/4a23abe0a9968c355d11280d7d338ff989a2a9c3))
+
 ## [1.1.2](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.1.1...client-v1.1.2) (2025-05-31)
 
 
