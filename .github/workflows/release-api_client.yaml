@@ -129,6 +129,48 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}
 
+      - name: (API) Change Kustomization manifest
+        if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
+        run: |
+          echo "Installing yq..."
+          wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+          # Clone GitOps repo
+          echo "Cloning repo..."
+          git clone https://${{ secrets.GITOPS_PAT }}@github.com/famasboy888/mern_stack_realty_gitOps_kubernetes.git
+          cd mern_stack_realty_gitOps_kubernetes
+
+          # Determine environment path
+          case "${{ github.event.workflow_run.head_branch }}" in
+            "dev")
+              ENV_PATH="overlays/dev"
+              ;;
+            "staging")
+              ENV_PATH="overlays/staging"
+              ;;
+            "main")
+              ENV_PATH="overlays/production"
+              ;;
+          esac
+
+          # Update API image tag
+          echo "Updating API image tag in kustomization.yaml..."
+          yq eval ".images[] |= select(.name == \"famasboy888/mern-realty-api\").newTag = \"${{ steps.version.outputs.tag }}\"" -i "$ENV_PATH/kustomization.yaml"
+
+          # Configure Git
+          echo "Configuring Git..."
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Commit and push if there are changes
+          echo "Checking for changes..."
+          if [[ -n $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "chore(api): update API image tag to ${{ steps.version.outputs.tag }} for ${{ github.event.workflow_run.head_branch }}"
+            git push
+          fi
+
       - name: (API) Create Deployment Summary
         if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
         run: |
@@ -220,6 +262,57 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}
+
+      - name: (Client) Change Kustomization manifest
+        if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
+        run: |
+          # Install yq if not already installed
+          echo "Checking for yq installation..."
+          if [ ! -f "/usr/local/bin/yq" ]; then
+            echo "Installing yq..."
+            wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/local/bin/yq
+            chmod +x /usr/local/bin/yq
+          fi
+
+          # Clone GitOps repo if not already cloned
+          echo "Cloning GitOps repository..."
+          if [ ! -d "mern_stack_realty_gitOps_kubernetes" ]; then
+            git clone https://${{ secrets.GITOPS_PAT }}@github.com/famasboy888/mern_stack_realty_gitOps_kubernetes.git
+            cd mern_stack_realty_gitOps_kubernetes
+          else
+            cd mern_stack_realty_gitOps_kubernetes
+          fi
+
+          # Determine environment path
+          echo "Determining environment path..."
+          case "${{ github.event.workflow_run.head_branch }}" in
+            "dev")
+              ENV_PATH="overlays/dev"
+              ;;
+            "staging")
+              ENV_PATH="overlays/staging"
+              ;;
+            "main")
+              ENV_PATH="overlays/production"
+              ;;
+          esac
+
+          # Update Client image tag
+          echo "Updating Client image tag in kustomization.yaml..."
+          yq eval ".images[] |= select(.name == \"famasboy888/mern-realty-client\").newTag = \"${{ steps.version-client.outputs.tag }}\"" -i "$ENV_PATH/kustomization.yaml"
+
+          # Configure Git if not already configured
+          echo "Configuring Git..."
+          git config --global user.name 'GitHub Actions' || true
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com' || true
+
+          # Commit and push if there are changes
+          echo "Checking for changes..."
+          if [[ -n $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "chore(client): update Client image tag to ${{ steps.version-client.outputs.tag }} for ${{ github.event.workflow_run.head_branch }}"
+            git push
+          fi
 
       - name: (Client) Create Deployment Summary
         if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
