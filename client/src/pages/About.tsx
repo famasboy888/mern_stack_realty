@@ -28,7 +28,7 @@ export default function About() {
           dedicated to making that a reality for each and every one of our
           clients.
         </p>
-        <p>This app is running on: {NODE_ENV} mode</p>
+        <p>This app is running on: {NODE_ENV} mode with run v1</p>
       </div>
     </main>
   );
