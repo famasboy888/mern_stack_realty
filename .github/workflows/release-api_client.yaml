@@ -125,12 +125,25 @@ jobs:
 
       - name: (API) Build and push Docker image
         if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
+        id: api-docker-build
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}
+          if docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }} .; then
+            if docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-api:${{ steps.version.outputs.tag }}; then
+              echo "build_success=true" >> $GITHUB_OUTPUT
+              echo "Docker build and push successful"
+            else
+              echo "build_success=false" >> $GITHUB_OUTPUT
+              echo "Docker push failed"
+              exit 1
+            fi
+          else
+            echo "build_success=false" >> $GITHUB_OUTPUT
+            echo "Docker build failed"
+            exit 1
+          fi
 
       - name: (API) Change Kustomization manifest
-        if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true'
+        if: steps.changed-files.outputs.api_any_changed == 'true' && steps.version.outputs.skip != 'true' && steps.api-docker-build.outputs.build_success == 'true'
         run: |
           echo "Installing yq..."
           wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/local/bin/yq
@@ -259,12 +272,25 @@ jobs:
       - name: (Client) Build and push Docker image
         if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
         working-directory: ./client
+        id: client-docker-build
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}
+          if docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }} .; then
+            if docker push ${{ secrets.DOCKER_USERNAME }}/mern-realty-client:${{ steps.version-client.outputs.tag }}; then
+              echo "build_success=true" >> $GITHUB_OUTPUT
+              echo "Docker build and push successful"
+            else
+              echo "build_success=false" >> $GITHUB_OUTPUT
+              echo "Docker push failed"
+              exit 1
+            fi
+          else
+            echo "build_success=false" >> $GITHUB_OUTPUT
+            echo "Docker build failed"
+            exit 1
+          fi
 
       - name: (Client) Change Kustomization manifest
-        if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true'
+        if: steps.changed-files.outputs.client_any_changed == 'true' && steps.version-client.outputs.skip != 'true' && steps.client-docker-build.outputs.build_success == 'true'
         run: |
           # Install yq if not already installed
           echo "Checking for yq installation..."
