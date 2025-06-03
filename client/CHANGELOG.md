@@ -1,3 +1,11 @@
+## [1.4.1](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.4.0...client-v1.4.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* workflow trigger testing v1 ([d9634f3](https://github.com/famasboy888/mern_stack_realty/commit/d9634f31e29326fefd6e0ced85ac92f21f8aedf3))
+* workflow trigger testing v2 ([497599b](https://github.com/famasboy888/mern_stack_realty/commit/497599b2432128192d36c318221b62a6c6fa2068))
+
 # [1.4.0](https://github.com/famasboy888/mern_stack_realty/compare/client-v1.3.0...client-v1.4.0) (2025-06-01)
 
 
